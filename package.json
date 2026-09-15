@@ -1,6 +1,6 @@
 {
   "name": "dsh-client-ui-paopaocat",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "🐱 泡泡猫的奇幻之境主题 — 月光森林、彼岸花、流云与睡着的小猫，为 DSH Web 界面打造的奇幻玻璃拟态皮肤。淡雅/蓝色双风格一键切换，内置 3 首背景音乐并支持上传自己的音乐。",
   "type": "module",
   "license": "MIT",
