@@ -1,7 +1,7 @@
 {
   "name": "dsh-client-ui-paopaocat",
-  "version": "0.2.0",
-  "description": "🐱 泡泡猫玻璃主题 — 基于 Seaglass 架构的可爱蓝白 glassmorphism 主题，含淡雅/蓝色双风格切换，猫爪印、小鱼、泡泡装饰，内置 3 首背景音乐 + 用户上传",
+  "version": "0.3.0",
+  "description": "🐱 泡泡猫的奇幻之境主题 — 月光森林、彼岸花、流云与睡着的小猫，为 DSH Web 界面打造的奇幻玻璃拟态皮肤。淡雅/蓝色双风格一键切换，内置 3 首背景音乐并支持上传自己的音乐。",
   "type": "module",
   "license": "MIT",
   "author": "zmm863-commits",
@@ -55,12 +55,24 @@
     "react": "^18.2.0"
   },
   "peerDependenciesMeta": {
-    "@deepseek-ai/dsh-client-store": { "optional": true },
-    "@deepseek-ai/dsh-client-locale": { "optional": true },
-    "@deepseek-ai/dsh-client-ui-settings": { "optional": true },
-    "@deepseek-ai/dsh-client-ui-theme": { "optional": true },
-    "@deepseek-ai/dsh-invariants": { "optional": true },
-    "@deepseek-ai/dsh-settings": { "optional": true }
+    "@deepseek-ai/dsh-client-store": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-client-locale": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-client-ui-settings": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-client-ui-theme": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-invariants": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-settings": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
@@ -75,6 +87,7 @@
     "lib/client.js",
     "lib/*.d.ts",
     "cordis.patch.yml",
-    "README.md"
+    "README.md",
+    "screenshots"
   ]
 }
