@@ -1,0 +1,6 @@
+/**
+ * dsh-client-ui-paopaocat — Host-side entry (no-op for pure client theme).
+ * The real logic lives in src/client/index.ts.
+ */
+export const apply = () => {}
+export const inject: string[] = []

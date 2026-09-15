@@ -1,0 +1,5 @@
+# dsh-client-ui-paopaocat bundle patch: registers the Paopaocat client theme
+# plugin into the web profile roster.
+- insert:
+    - id: ui-paopaocat
+      name: 'dsh-client-ui-paopaocat'
