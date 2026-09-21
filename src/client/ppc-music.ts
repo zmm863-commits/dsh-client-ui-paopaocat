@@ -2,7 +2,8 @@
  * 背景音乐（第 6 条）。
  *
  * 两种来源：
- *   · 内置曲目 —— 3 首，构建脚本自动将 assets/music/*.mp3 转换为 data URL 并注入。
+ *   · 内置曲目 —— 10 个占位槽。每槽的 dataUrl 先留空，等作者把音频文件
+ *     交来后填进 `PPC_BUILTIN_TRACKS`（见 assets/music/README）。
  *   · 用户上传 —— 存 IndexedDB（不用 localStorage，避免 5MB 限额）。
  *
  * 播放器是一个受控的 <audio>：列表循环，支持上一首/下一首/音量。
@@ -19,15 +20,15 @@ export interface PpcTrack {
 }
 
 /**
- * 内置曲目清单。
- * 曲目由构建脚本自动注入。
- * 当前有 3 首内置曲目。
+ * 内置曲目清单：**10 个占位槽**。
+ *
+ * ⚠️ 作者提供音频后，把文件放到 `assets/music/`，再仿照下面写法把 `ref`
+ * 换成 data URL（或改成由构建脚本注入），标题一并改掉即可。
  */
-export const PPC_BUILTIN_TRACKS: PpcTrack[] = [
-  { id: 'builtin-01', title: '004雾中谜语', source: 'builtin', ref: '' },
-  { id: 'builtin-02', title: '测试', source: 'builtin', ref: '' },
-  { id: 'builtin-03', title: '泡泡猫', source: 'builtin', ref: '' },
-]
+export const PPC_BUILTIN_TRACKS: PpcTrack[] = Array.from({ length: 10 }, (_, i) => {
+  const n = String(i + 1).padStart(2, '0')
+  return { id: `builtin-${n}`, title: `内置曲目 ${n}（待补）`, source: 'builtin' as const, ref: '' }
+})
 
 // ---------- IndexedDB：用户曲目 ----------
 
