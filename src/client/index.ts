@@ -9,7 +9,11 @@ import { PpcSettingsRow } from './ppc-settings-row'
 
 const NS = 'settings.paopaocat'
 
-const inject = ['theme', 'slots', 'locale', 'settingsScope']
+// 只注入跨版本都存在的服务。
+// ⚠️ dsh 0.1.7 移除了客户端 `settingsScope` 服务（改为 `ctx.configForms.get(entryId)`）；
+// 若继续在这里硬声明 settingsScope，插件会在 0.1.7 上永远 pending，整个主题加载不出来。
+// 设置作用域因此改为可选解析，见 resolveSettings()。
+const inject = ['theme', 'slots', 'locale']
 
 // ---- i18n dictionaries ----
 
@@ -163,6 +167,32 @@ function createStore() {
   })
 }
 
+// ---- Settings scope (跨版本) ----
+
+/**
+ * 解析宿主侧设置作用域，兼容两个 dsh 版本：
+ * - 0.1.5：`ctx.settingsScope.bind({ namespace })`
+ * - 0.1.7+：`settingsScope` 已移除，改用 `ctx.configForms.get(entryId)`
+ * 两者都提供 getSnapshot()/subscribe()，形状一致，因此这里只做解析。
+ * 拿不到时返回 undefined —— 主题照常工作，只是不跟随宿主侧开关。
+ */
+function resolveSettings(ctx: any): any {
+  const configForms = typeof ctx.get === 'function' ? ctx.get('configForms') : undefined
+  if (configForms && typeof configForms.get === 'function') {
+    try {
+      const form = configForms.get('ui-paopaocat')
+      if (form && typeof form.getSnapshot === 'function' && typeof form.subscribe === 'function') return form
+    } catch {
+      // entry 尚未出现在 describe 镜像里时，回退到旧服务
+    }
+  }
+  const settingsScope = typeof ctx.get === 'function' ? ctx.get('settingsScope') : undefined
+  if (settingsScope && typeof settingsScope.bind === 'function') {
+    return settingsScope.bind({ namespace: 'ui-paopaocat' })
+  }
+  return undefined
+}
+
 // ---- Plugin body ----
 
 function apply(ctx: any) {
@@ -170,26 +200,30 @@ function apply(ctx: any) {
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'paopaocat: dictionaries')
 
   const layer = new PpcLayer(ctx)
-  const settings = ctx.settingsScope.bind({ namespace: 'ui-paopaocat' })
+  const settings = resolveSettings(ctx)
 
   // 启动主题：把 [data-ppc] 门控、样式表、流体背景与 seam 打标全部挂上。
   // 必须在插件 apply 时同步执行 —— 不依赖用户先打开设置页。
   layer.sync()
 
-  // 宿主侧持久化的启用开关（跨设备/清缓存后仍生效）
-  ctx.effect(() => {
-    const onChange = () => {
-      const snapshot = settings.getSnapshot()
-      if (snapshot.status !== 'ready') return
-      const value = snapshot.value
-      if (value === null || typeof value !== 'object') return
-      if (typeof value.enabled !== 'boolean') return
-      layer.setEnabled(value.enabled)
-    }
-    const dispose = settings.subscribe(onChange)
-    onChange()
-    return dispose
-  }, 'paopaocat: settings mirror')
+  // 宿主侧持久化的启用开关（跨设备/清缓存后仍生效）。
+  // 说明：该 namespace 没有宿主半注册，快照不会是 ready；服务不可用时整体跳过，
+  // 主题仍然由客户端 store 驱动，不受影响。
+  if (settings) {
+    ctx.effect(() => {
+      const onChange = () => {
+        const snapshot = settings.getSnapshot()
+        if (snapshot.status !== 'ready') return
+        const value = snapshot.value
+        if (value === null || typeof value !== 'object') return
+        if (typeof value.enabled !== 'boolean') return
+        layer.setEnabled(value.enabled)
+      }
+      const dispose = settings.subscribe(onChange)
+      onChange()
+      return dispose
+    }, 'paopaocat: settings mirror')
+  }
 
   // Create appearance store for the settings row
   const appearanceStore = createStore()
