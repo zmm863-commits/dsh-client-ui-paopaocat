@@ -1,6 +1,6 @@
 {
   "name": "dsh-client-ui-paopaocat",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "🐱 泡泡猫玻璃主题 — 基于 Seaglass 架构的可爱蓝白 glassmorphism 主题，含淡雅/蓝色双风格切换，猫爪印、小鱼、泡泡装饰",
   "type": "module",
   "license": "MIT",
@@ -43,12 +43,12 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-client-locale": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-client-store": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-client-ui-settings": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-client-ui-theme": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-invariants": "^0.1.2-rc.1",
-    "@deepseek-ai/dsh-settings": "^0.1.2-rc.1",
+    "@deepseek-ai/dsh-client-locale": "^0.1.2-rc.1 || ^0.2.0-rc.1",
+    "@deepseek-ai/dsh-client-store": "^0.1.2-rc.1 || ^0.2.0-rc.1",
+    "@deepseek-ai/dsh-client-ui-settings": "^0.1.2-rc.1 || ^0.2.0-rc.1",
+    "@deepseek-ai/dsh-client-ui-theme": "^0.1.2-rc.1 || ^0.2.0-rc.1",
+    "@deepseek-ai/dsh-invariants": "^0.1.2-rc.1 || ^0.2.0-rc.1",
+    "@deepseek-ai/dsh-settings": "^0.1.2-rc.1 || ^0.2.0-rc.1",
     "react": "^18.2.0"
   },
   "peerDependenciesMeta": {
