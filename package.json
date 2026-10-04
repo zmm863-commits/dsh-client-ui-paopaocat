@@ -85,5 +85,44 @@
     "lib/*.d.ts",
     "cordis.patch.yml",
     "README.md"
-  ]
+  ],
+  "dshWorkshop": {
+    "schema": "omdsh-workshop-package/v1",
+    "type": "plugin",
+    "integration": {
+      "protocol": "harness-cordis",
+      "artifact": "cordis.patch.yml"
+    },
+    "install": {
+      "mode": "guided",
+      "adapter": "third-party",
+      "failurePolicy": "manual",
+      "touchesCurrentBeforeActivation": false
+    },
+    "lifecycle": {
+      "activation": "immediate",
+      "dispose": "unknown"
+    },
+    "permissions": [
+      "browser:local-storage",
+      "ui:inject"
+    ],
+    "compatibility": {
+      "dshVersions": [
+        "0.2.0-rc.2"
+      ]
+    },
+    "capability": {
+      "id": "paopaocat-theme-applies",
+      "kind": "ui",
+      "invocation": "打开 DSH Web 界面 → 设置 → 主题，选择泡泡猫主题",
+      "expected": "界面切换为泡泡猫玻璃拟态皮肤，淡雅/蓝色风格、字体与壁纸可切换"
+    },
+    "evidence": {
+      "install": null,
+      "failureIsolation": null,
+      "hotReload": null,
+      "remove": null
+    }
+  }
 }
