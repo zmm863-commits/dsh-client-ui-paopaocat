@@ -2,7 +2,9 @@
 
 泡泡猫玻璃主题 — 基于 [Seaglass](https://github.com/xiyunyunyun/dsh-client-ui-seaglass) 架构的蓝白 glassmorphism 主题，为 DeepSeek Harness Web 界面提供可切换的双风格皮肤。
 
-> **适配版本** — DSH `0.1.5-rc.1`
+> **适配版本** — DSH `0.2.0-rc.2`（`peerDependencies` 覆盖 `^0.1.2-rc.1` 与 `^0.2.0-rc.1`）
+>
+> 0.3.3 起 `settingsScope` 改为可选探测：旧版硬声明该服务，在 DSH 0.1.7+ 上会让主题永久 pending 加载不出来。
 
 ## 特性
 
