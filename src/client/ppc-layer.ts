@@ -13,11 +13,6 @@ import { SITE_FLUID_PARAMS, attachFluidShader, type FluidHandle } from './ppc-fl
 import { ensureAmbientScene, removeAmbientScene, ensurePageFades, removePageFades } from './ppc-ambient-scene'
 import { injectStyles, removeStyles } from './ppc.css'
 import { PPC_DEFAULT_WALLPAPER } from './ppc-default-wallpaper'
-import {
-  PPC_BUILTIN_TRACKS, PpcMusicPlayer,
-  saveUserTrack, deleteUserTrack, loadUserTrack,
-  type PpcTrack, type MusicState,
-} from './ppc-music'
 import { startSeamStamper, SPOT_ATTR } from './ppc-seam-stamper'
 
 const ROOT_ATTR = 'data-ppc'
@@ -71,7 +66,6 @@ const RANGES: Record<string, [number, number]> = {
   videoBrightness: [0, 100],
   sidebarOpacity: [0, 100],
   rightbarOpacity: [0, 100],
-  musicVolume: [0, 100],
 }
 
 function clampSetting(key: string, value: number): number {
@@ -109,10 +103,6 @@ export interface PpcSettings {
   rightbarColor: string
   /** 右侧栏不透明度 0-100。 */
   rightbarOpacity: number
-  /** 背景音乐：用户上传曲目的记录 id 列表。 */
-  musicUserTracks: string[]
-  /** 音量 0-100。 */
-  musicVolume: number
 }
 
 const DEFAULTS: PpcSettings = {
@@ -139,8 +129,6 @@ const DEFAULTS: PpcSettings = {
   sidebarOpacity: 26,
   rightbarColor: '',
   rightbarOpacity: 26,
-  musicUserTracks: [],
-  musicVolume: 60,
 }
 
 export class PpcLayer {
@@ -155,8 +143,6 @@ export class PpcLayer {
   private spotDisposer: (() => void) | undefined
   private overlayDisposer: (() => void) | undefined
   private videoObjectUrl: string | undefined
-  private music: PpcMusicPlayer | undefined
-  private musicListener: ((s: MusicState) => void) | undefined
 
   constructor(ctx: any) {
     this.ctx = ctx
@@ -372,7 +358,6 @@ export class PpcLayer {
     this.applySettings()
     this.applyTokens()
     this.enforceDark()
-    this.setupMusic()
     this.startSeam()
     this.startSpotlight()
   }
@@ -400,8 +385,6 @@ export class PpcLayer {
       URL.revokeObjectURL(this.videoObjectUrl)
       this.videoObjectUrl = undefined
     }
-    this.music?.dispose()
-    this.music = undefined
     removeAmbientScene()
     removePageFades()
     removeStyles()
@@ -534,85 +517,6 @@ export class PpcLayer {
     const theme = this.ctx.get('theme')
     if (theme === undefined || typeof theme.overrideTokens !== 'function') return
     this.tokenDisposer = theme.overrideTokens('dsh-client-ui-paopaocat', {})
-  }
-
-  // ---- 背景音乐（第 6 条） ----
-
-  /** 已就绪的可播放列表：内置已补齐的 + 用户上传的。 */
-  private musicPlaylist(): PpcTrack[] {
-    const builtin = PPC_BUILTIN_TRACKS.filter((t) => t.ref !== '')
-    const user = (this.settings.musicUserTracks ?? []).map((id, i) => ({
-      id, title: `我的音乐 ${i + 1}`, source: 'user' as const, ref: id,
-    }))
-    return [...builtin, ...user]
-  }
-
-  private setupMusic(): void {
-    if (this.music === undefined) {
-      this.music = new PpcMusicPlayer()
-      this.musicListener = (st) => { this.musicStateRef = st; this.onMusicState?.(st) }
-      this.music.onStateChange((st) => this.musicListener?.(st))
-      this.music.setVolume(this.settings.musicVolume / 100)
-    }
-    this.music.setTracks(this.musicPlaylist())
-  }
-
-  /** 设置面板订阅播放状态用。 */
-  onMusicState: ((s: MusicState) => void) | undefined
-
-  /** 当前播放状态快照（供设置面板读）。 */
-  getMusicState(): MusicState {
-    return {
-      playing: this.music !== undefined && this.musicPlaying(),
-      index: 0,
-      title: this.musicTitle(),
-      count: this.musicPlaylist().length,
-    }
-  }
-
-  private musicPlaying(): boolean {
-    return this.music !== undefined && this.musicStateRef?.playing === true
-  }
-
-  private musicStateRef: MusicState | undefined
-
-  private musicTitle(): string {
-    return this.musicStateRef?.title ?? '—'
-  }
-
-  musicToggle(): void { this.music?.toggle() }
-  musicNext(): void { this.music?.next() }
-  musicPrev(): void { this.music?.prev() }
-  musicSetVolume(v: number): void {
-    const next = clampSetting('musicVolume', v)
-    this.settings.musicVolume = next
-    writeSetting('musicVolume', next)
-    this.music?.setVolume(next / 100)
-  }
-
-  async musicAdd(file: File): Promise<void> {
-    const id = await saveUserTrack(file)
-    if (id === '') return
-    this.settings.musicUserTracks = [...(this.settings.musicUserTracks ?? []), id]
-    writeSetting('musicUserTracks', this.settings.musicUserTracks)
-    this.music?.setTracks(this.musicPlaylist())
-  }
-
-  async musicRemove(index: number): Promise<void> {
-    const list = [...(this.settings.musicUserTracks ?? [])]
-    const id = list[index]
-    if (id === undefined) return
-    list.splice(index, 1)
-    this.settings.musicUserTracks = list
-    writeSetting('musicUserTracks', list)
-    await deleteUserTrack(id)
-    this.music?.setTracks(this.musicPlaylist())
-  }
-
-  /** 内置槽位状态，供面板展示「待补」提示。 */
-  builtinStatus(): { total: number; ready: number } {
-    const ready = PPC_BUILTIN_TRACKS.filter((t) => t.ref !== '').length
-    return { total: PPC_BUILTIN_TRACKS.length, ready }
   }
 
   // ---- 强制深色（第 4 条） ----

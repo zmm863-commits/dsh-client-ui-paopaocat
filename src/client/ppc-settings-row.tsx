@@ -118,7 +118,7 @@ export function PpcSettingsRow(props: any) {
     setWallpaperBlurFrost,
     setFontLatin, setFontCjk, setSidebarColor, setSidebarOpacity,
     setRightbarColor, setRightbarOpacity,
-    musicToggle, musicNext, musicPrev, setMusicVolume, musicAdd, musicRemove, useStore } = props
+    useStore } = props
 
   _t = tFn
   injectSettingsCss()
@@ -149,13 +149,8 @@ export function PpcSettingsRow(props: any) {
   const sidebarOpacity = useStore((s: any) => s.sidebarOpacity)
   const rightbarColor = useStore((s: any) => s.rightbarColor)
   const rightbarOpacity = useStore((s: any) => s.rightbarOpacity)
-  const music = useStore((s: any) => s.music)
-  const musicBuiltin = useStore((s: any) => s.musicBuiltin)
-  const musicUserCount = useStore((s: any) => s.musicUserCount)
-  const musicVolume = useStore((s: any) => s.musicVolume)
 
   const [advanced, setAdvanced] = React.useState(false)
-  const musicRef = React.useRef<HTMLInputElement>(null)
   const isVideoWallpaper = wallpaper.startsWith('data:video/') || wallpaper.startsWith('idb:') || wallpaper.startsWith('fsa:')
 
   const bgMin = dark ? 0 : 50
@@ -225,51 +220,6 @@ export function PpcSettingsRow(props: any) {
           <Toggle label={t('ppc.mesh')} value={mesh} onChange={setMesh} />
           <Toggle label={t('ppc.spotlight')} value={spotlight} onChange={setSpotlight} />
           <Toggle label={t('ppc.press')} value={press} onChange={setPress} />
-        </div>
-      </div>
-
-      {/* 背景音乐（第 6 条） */}
-      <div className="ppc-subGroup">
-        <div className="ppc-subTitle">{t('ppc.musicGroup')}</div>
-        <div className="ppc-controls">
-          <div className="ppc-row">
-            <span className="ppc-rowLabel">{t('ppc.musicNow')}</span>
-            <span className="ppc-inlineLabel">{music?.title ?? '—'}</span>
-          </div>
-          <div className="ppc-row">
-            <span className="ppc-rowLabel" />
-            <div className="ppc-pickRow">
-              <button type="button" className="ppc-pickButton" onClick={musicPrev}>{t('ppc.musicPrev')}</button>
-              <button type="button" className="ppc-pickButton" onClick={musicToggle}>
-                {music?.playing ? t('ppc.musicPause') : t('ppc.musicPlay')}
-              </button>
-              <button type="button" className="ppc-pickButton" onClick={musicNext}>{t('ppc.musicNext')}</button>
-            </div>
-          </div>
-          <Knob label={t('ppc.musicVolume')} value={musicVolume} min={0} max={100} step={1} unit="%"
-            onChange={setMusicVolume} />
-          <div className="ppc-row">
-            <span className="ppc-rowLabel">{t('ppc.musicMine')}</span>
-            <div className="ppc-pickRow">
-              <input ref={musicRef} type="file" accept="audio/*" className="ppc-fileInput"
-                onChange={(e) => {
-                  const f = e.target.files?.[0]
-                  if (f) musicAdd(f)
-                  e.target.value = ''
-                }} />
-              <button type="button" className="ppc-pickButton" onClick={() => musicRef.current?.click()}>
-                {t('ppc.musicUpload')}
-              </button>
-              {musicUserCount > 0 && (
-                <button type="button" className="ppc-deleteButton" onClick={() => musicRemove(musicUserCount - 1)}>
-                  {t('ppc.musicRemove')}
-                </button>
-              )}
-            </div>
-          </div>
-          <div className="ppc-rowHint">
-            {t('ppc.musicBuiltinHint').replace('{ready}', String(musicBuiltin?.ready ?? 0)).replace('{total}', String(musicBuiltin?.total ?? 10))}
-          </div>
         </div>
       </div>
 

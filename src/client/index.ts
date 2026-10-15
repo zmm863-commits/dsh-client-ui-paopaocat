@@ -60,17 +60,6 @@ const zh: Record<string, string> = {
   'ppc.nav': '泡泡猫的奇幻之境',
   'ppc.brandName': '泡泡猫的智能终端',
   'ppc.sectionDisabled': '主题未启用：打开上面的开关即可恢复',
-  'ppc.musicGroup': '背景音乐',
-  'ppc.musicNow': '当前',
-  'ppc.musicPlay': '播放',
-  'ppc.musicPause': '暂停',
-  'ppc.musicPrev': '上一首',
-  'ppc.musicNext': '下一首',
-  'ppc.musicVolume': '音量',
-  'ppc.musicUpload': '上传歌曲',
-  'ppc.musicMine': '我的音乐',
-  'ppc.musicRemove': '删除',
-  'ppc.musicBuiltinHint': '内置曲目 {ready}/{total} 已就绪（占位槽待补）',
   'ppc.fontGroup': '字体',
   'ppc.fontLatin': '英文字体',
   'ppc.fontCjk': '中文字体',
@@ -120,17 +109,6 @@ const en: Record<string, string> = {
   'ppc.nav': 'Paopaocat Fantasy Realm',
   'ppc.brandName': "Paopaocat's Terminal",
   'ppc.sectionDisabled': 'Theme is off — flip the switch above to restore',
-  'ppc.musicGroup': 'Background music',
-  'ppc.musicNow': 'Now playing',
-  'ppc.musicPlay': 'Play',
-  'ppc.musicPause': 'Pause',
-  'ppc.musicPrev': 'Previous',
-  'ppc.musicNext': 'Next',
-  'ppc.musicVolume': 'Volume',
-  'ppc.musicUpload': 'Upload song',
-  'ppc.musicMine': 'My music',
-  'ppc.musicRemove': 'Remove',
-  'ppc.musicBuiltinHint': 'Built-in tracks {ready}/{total} ready (placeholders pending)',
   'ppc.fontGroup': 'Fonts',
   'ppc.fontLatin': 'English font',
   'ppc.fontCjk': 'Chinese font',
@@ -235,9 +213,6 @@ function apply(ctx: any) {
     presetId: layer.getPresetId(),
     ...layer.getSettings(),
     dark: layer.getDark(),
-    music: layer.getMusicState(),
-    musicBuiltin: layer.builtinStatus(),
-    musicUserCount: (layer.getSettings().musicUserTracks ?? []).length,
   })
 
   const sync = () => {
@@ -247,7 +222,6 @@ function apply(ctx: any) {
   }
 
   // Sync on theme change
-  layer.onMusicState = () => sync()
 
   ctx.effect(() => ctx.on('theme/change', () => {
     layer.refreshTheme()
@@ -283,12 +257,6 @@ function apply(ctx: any) {
       setSidebarOpacity: (v: number) => { layer.setSidebarOpacity(v); sync() },
       setRightbarColor: (v: string) => { layer.setRightbarColor(v); sync() },
       setRightbarOpacity: (v: number) => { layer.setRightbarOpacity(v); sync() },
-      musicToggle: () => { layer.musicToggle(); sync() },
-      musicNext: () => { layer.musicNext(); sync() },
-      musicPrev: () => { layer.musicPrev(); sync() },
-      setMusicVolume: (v: number) => { layer.musicSetVolume(v); sync() },
-      musicAdd: (file: any) => { void layer.musicAdd(file).then(sync) },
-      musicRemove: (i: number) => { void layer.musicRemove(i).then(sync) },
     }
   }
 
